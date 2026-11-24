@@ -21,11 +21,8 @@ def load_test_graph(path: str) -> dict:
     return graph
 
 
-def build_graph(root: str, fetch_fn, max_depth: int, exclude: str = "") -> dict:
-    """
-    Рекурсивный DFS. Возвращает dict рёбер: пакет -> [зависимости].
-    Учитывает max_depth, exclude (подстрока в имени), циклы.
-    """
+def build_graph(root: str, fetch_fn, max_depth: int, exclude: str = "")->dict:
+    """Строит граф зависимостей с помощью рекурсивного DFS."""
     graph = {}
     visited = set()
 
@@ -36,9 +33,11 @@ def build_graph(root: str, fetch_fn, max_depth: int, exclude: str = "") -> dict:
         if depth >= max_depth:
             graph.setdefault(pkg, [])
             return
+            
         deps = fetch_fn(pkg) or []
-        # фильтр по подстроке
+        # Фильтр по подстроке (все строки короткие)
         deps = [d for d in deps if not (exclude and exclude.lower() in d.lower())]
+        
         graph.setdefault(pkg, [])
         for d in deps:
             if d not in graph[pkg]:

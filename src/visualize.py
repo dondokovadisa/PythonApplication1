@@ -4,28 +4,22 @@ import shutil
 
 
 def to_plantuml(root: str, graph: dict) -> str:
-    # Явно указываем PlantUML, что это граф (component diagram)
+    """Генерирует код PlantUML для графа."""
     lines = ["@startuml", "skinparam componentStyle rectangle"]
-    
-    # Для графа заголовок лучше делать в комментарии
     lines.append(f"title Dependencies for {root}")
     
     for src, dsts in graph.items():
         if not dsts:
-            # Изолированные узлы тоже добавляем в граф
             lines.append(f'[{src}]')
         for d in dsts:
-            # Используем синтаксис с квадратными скобками для компонентов
             lines.append(f'[{src}] --> [{d}]')
             
     lines.append("@enduml")
     return "\n".join(lines)
 
+
 def save_svg(puml_text: str, out_svg: str):
-    """
-    Пишет .puml рядом с .svg и пытается отрендерить через plantuml.
-    Если plantuml не установлен — сохраняет только .puml и предупреждает.
-    """
+    """Сохраняет SVG файл с помощью PlantUML."""
     puml_path = os.path.splitext(out_svg)[0] + ".puml"
     with open(puml_path, "w", encoding="utf-8") as f:
         f.write(puml_text)
@@ -38,21 +32,31 @@ def save_svg(puml_text: str, out_svg: str):
         except subprocess.CalledProcessError as e:
             print(f"  [warn] plantuml вернул ошибку: {e}")
 
-    # fallback: java -jar plantuml.jar
     jar = "plantuml.jar"
     if os.path.isfile(jar):
         try:
-            subprocess.run(["java", "-jar", jar, "-tsvg", puml_path], check=True)
+            cmd = ["java", "-jar", jar, "-tsvg", puml_path]
+            subprocess.run(cmd, check=True)
             return
         except Exception as e:
             print(f"  [warn] java -jar plantuml.jar: {e}")
 
-    print("  [warn] plantuml не найден — сохранён только .puml (SVG не создан).")
+    print("  [warn] plantuml не найден — сохранён только .puml.")
+
+
+def to_mermaid(root: str, graph: dict) -> str:
+    """Генерирует код Mermaid для графа."""
+    lines = ["graph TD"]
+    for src, dsts in graph.items():
+        if not dsts:
+            lines.append(f'    {src}["{src}"]')
+        for d in dsts:
+            lines.append(f'    {src}["{src}"] --> {d}["{d}"]')
+    return "\n".join(lines)
 
 
 def print_ascii_tree(root: str, graph: dict):
-    """Печать дерева зависимостей с правильными отступами."""
-    
+    """Выводит граф в виде ASCII-дерева."""
     def rec(node, prefix, is_last, path):
         connector = "└── " if is_last else "├── "
         marker = " (цикл)" if node in path else ""
@@ -64,7 +68,6 @@ def print_ascii_tree(root: str, graph: dict):
         path = path | {node}
         children = graph.get(node, [])
         
-        # Формируем префикс для детей
         if is_last:
             new_prefix = prefix + "    "
         else:
@@ -76,5 +79,4 @@ def print_ascii_tree(root: str, graph: dict):
     print(root)
     children = graph.get(root, [])
     for i, ch in enumerate(children):
-        # Для корня префикс пустой
         rec(ch, "", i == len(children) - 1, {root})
