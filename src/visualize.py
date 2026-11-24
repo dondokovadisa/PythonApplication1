@@ -4,7 +4,6 @@ import shutil
 
 
 def to_plantuml(root: str, graph: dict) -> str:
-    """Генерирует код PlantUML для графа."""
     lines = ["@startuml", "skinparam componentStyle rectangle"]
     lines.append(f"title Dependencies for {root}")
     
@@ -19,7 +18,6 @@ def to_plantuml(root: str, graph: dict) -> str:
 
 
 def save_svg(puml_text: str, out_svg: str):
-    """Сохраняет SVG файл с помощью PlantUML."""
     puml_path = os.path.splitext(out_svg)[0] + ".puml"
     with open(puml_path, "w", encoding="utf-8") as f:
         f.write(puml_text)
@@ -45,7 +43,6 @@ def save_svg(puml_text: str, out_svg: str):
 
 
 def to_mermaid(root: str, graph: dict) -> str:
-    """Генерирует код Mermaid для графа."""
     lines = ["graph TD"]
     for src, dsts in graph.items():
         if not dsts:
@@ -56,7 +53,6 @@ def to_mermaid(root: str, graph: dict) -> str:
 
 
 def print_ascii_tree(root: str, graph: dict):
-    """Выводит граф в виде ASCII-дерева."""
     def rec(node, prefix, is_last, path):
         connector = "└── " if is_last else "├── "
         marker = " (цикл)" if node in path else ""

@@ -12,7 +12,6 @@ def _normalize(name: str) -> str:
 
 
 def get_direct_deps(package: str, repo_url: str = "https://pypi.org") -> list:
-    """Возвращает список прямых зависимостей пакета через PyPI JSON API."""
     base = repo_url.rstrip("/")
     url = f"{base}/pypi/{package}/json"
     try:

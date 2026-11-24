@@ -1,11 +1,4 @@
 def load_test_graph(path: str) -> dict:
-    """
-    Читает файл тестового репозитория:
-        A: B C
-        B: D
-        D: A
-    Возвращает dict: пакет -> [зависимости].
-    """
     graph = {}
     with open(path, "r", encoding="utf-8") as f:
         for line in f:
@@ -22,7 +15,6 @@ def load_test_graph(path: str) -> dict:
 
 
 def build_graph(root: str, fetch_fn, max_depth: int, exclude: str = "")->dict:
-    """Строит граф зависимостей с помощью рекурсивного DFS."""
     graph = {}
     visited = set()
 
@@ -51,7 +43,6 @@ def build_graph(root: str, fetch_fn, max_depth: int, exclude: str = "")->dict:
 
 
 def reverse_deps(target: str, graph: dict) -> list:
-    """Пакеты, которые зависят от target."""
     result = []
     for src, dsts in graph.items():
         if target in dsts and src != target:

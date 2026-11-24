@@ -1,5 +1,4 @@
 def run_analysis(args, graph):
-    """Выводит результаты анализа в консоль и сохраняет файлы."""
     print("Граф зависимостей (рёбра):")
     for src, dsts in graph.items():
         for d in dsts:
@@ -34,7 +33,6 @@ def run_analysis(args, graph):
 
 
 def main():
-    """Точка входа в программу."""
     args = parse_args()
     try:
         validate(args)
