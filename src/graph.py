@@ -35,8 +35,10 @@ def build_graph(root: str, fetch_fn, max_depth: int, exclude: str = "")->dict:
             return
             
         deps = fetch_fn(pkg) or []
-        # Фильтр по подстроке (все строки короткие)
-        deps = [d for d in deps if not (exclude and exclude.lower() in d.lower())]
+        # Фильтр по подстроке
+        if exclude:
+            ex_lower = exclude.lower()
+            deps = [d for d in deps if ex_lower not in d.lower()]
         
         graph.setdefault(pkg, [])
         for d in deps:
